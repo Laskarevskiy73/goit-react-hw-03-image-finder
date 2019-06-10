@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import SearchForm from './SearchForm';
 import Gallery from './Gallery';
 import { getImageByQuery } from '../../services/getImageAPI';
@@ -6,16 +7,24 @@ import mapper from './mapper';
 import style from './css/PageSearchImage.module.css';
 
 export default class PageSearchImage extends Component {
-  state = {
-    requestedPictures: [],
-    page: '',
+  static defaultProps = {
     query: '',
   };
 
-  componentDidUpdate(prevState) {
-    const { requestedPictures } = this.state;
+  static propTypes = {
+    query: PropTypes.string,
+  };
 
-    if (prevState.requestedPictures !== requestedPictures) {
+  state = {
+    requestedPictures: [],
+    page: 1,
+    query: '',
+  };
+
+  componentDidUpdate(prevProps) {
+    const { query } = this.state;
+
+    if (prevProps.query !== query) {
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: 'smooth',
@@ -24,36 +33,30 @@ export default class PageSearchImage extends Component {
   }
 
   handleSubmit = ({ query }) => {
-    this.setState(prevState =>
-      prevState.query !== query
-        ? {
-            query,
-            page: 1,
-          }
-        : {
-            page: 1,
-          },
-    );
+    const { page } = this.state;
 
-    getImageByQuery(query)
+    getImageByQuery(query, page)
       .then(({ data: { hits } }) =>
-        this.setState({ requestedPictures: mapper(hits) }),
+        this.setState({
+          query,
+          requestedPictures: mapper(hits),
+          page: page + 1,
+        }),
       )
       .catch(error => error);
   };
 
   handleClickButton = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+    const { query, page } = this.state;
 
-    const { page, query } = this.state;
-
-    getImageByQuery(query, page).then(({ data: { hits } }) => {
-      this.setState(prev => ({
-        requestedPictures: [...prev.requestedPictures, ...mapper(hits)],
-      }));
-    });
+    getImageByQuery(query, page)
+      .then(({ data: { hits } }) =>
+        this.setState(prevState => ({
+          requestedPictures: [...prevState.requestedPictures, ...mapper(hits)],
+          page: page + 1,
+        })),
+      )
+      .catch(error => error);
   };
 
   render() {
