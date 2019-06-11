@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import SearchForm from './SearchForm';
 import Gallery from './Gallery';
 import { getImageByQuery } from '../../services/getImageAPI';
@@ -7,24 +6,16 @@ import mapper from './mapper';
 import style from './css/PageSearchImage.module.css';
 
 export default class PageSearchImage extends Component {
-  static defaultProps = {
-    query: '',
-  };
-
-  static propTypes = {
-    query: PropTypes.string,
-  };
-
   state = {
     requestedPictures: [],
     page: 1,
     query: '',
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevState) {
     const { query } = this.state;
 
-    if (prevProps.query !== query) {
+    if (prevState.query !== query) {
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: 'smooth',
@@ -40,7 +31,7 @@ export default class PageSearchImage extends Component {
         this.setState({
           query,
           requestedPictures: mapper(hits),
-          page: page + 1,
+          page: 2,
         }),
       )
       .catch(error => error);
