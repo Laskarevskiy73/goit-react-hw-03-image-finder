@@ -8,7 +8,7 @@ import style from './css/PageSearchImage.module.css';
 export default class PageSearchImage extends Component {
   state = {
     requestedPictures: [],
-    page: 1,
+    page: '',
     query: '',
   };
 
@@ -23,9 +23,7 @@ export default class PageSearchImage extends Component {
     }
   }
 
-  handleSubmit = ({ query }) => {
-    const { page } = this.state;
-
+  handleSubmit = ({ query, page }) => {
     getImageByQuery(query, page)
       .then(({ data: { hits } }) =>
         this.setState({

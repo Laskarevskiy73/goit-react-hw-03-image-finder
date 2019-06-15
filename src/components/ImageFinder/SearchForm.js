@@ -5,6 +5,7 @@ import style from './css/SearchForm.module.css';
 export default class SearchForm extends Component {
   state = {
     query: '',
+    page: 1,
   };
 
   handleChangeFieldSearch = ({ target }) => {
